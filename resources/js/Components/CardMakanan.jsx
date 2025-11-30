@@ -19,16 +19,15 @@ export default function CardFood({
         </div>
 
         {/* Content */}
-        <div className="p-4 flex flex-col gap-2">
+        <div className="py-4 px-5 flex flex-col gap-2">
           
           {/* badges */}
           <div className="flex flex-wrap gap-2">
-            <span className="px-3 py-1 bg-amber-100 rounded-full text-amber-600 text-xs font-medium font-['TT_Commons']">
-              {category}
-            </span>
-  
             <span className="px-3 py-1 bg-amber-600/10 rounded-full text-amber-600 text-xs font-medium font-['TT_Commons']">
               {badge}
+            </span>
+            <span className="px-3 py-1 bg-amber-100 rounded-full text-amber-600 text-xs font-medium font-['TT_Commons']">
+              {category}
             </span>
           </div>
 
@@ -40,18 +39,18 @@ export default function CardFood({
           {/* Price + action */}
           <div className="flex items-center justify-between">
             <div className="flex flex-row gap-2 items-center">
-              <span className="text-lg font-demibold text-neutral-800 font-['TT_Commons']">{price}</span>
-              <span className="text-sm text-neutral-500 font-['TT_Commons']">{unit}</span>
+              <span className="text-[20px] font-demibold text-neutral-800 font-['TT_Commons']">{price}</span>
+              <span className="text-[20px]font-demibold text-neutral-400 font-['TT_Commons']">{unit}</span>
             </div>
 
             {/* Add button */}
             <button className="p-2 bg-amber-600/10 rounded-full hover:bg-amber-600/20 duration-200 flex">
               <svg 
-                width="20" 
-                height="20" 
+                width="16" 
+                height="16" 
                 viewBox="0 0 24 24" 
                 fill="none" 
-                stroke="" 
+                stroke="oklch(41.4% 0.112 45.904)" 
                 strokeWidth="2" 
                 strokeLinecap="round" 
                 strokeLinejoin="round"

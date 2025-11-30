@@ -34,7 +34,7 @@ function PasswordRequirements({ password }) {
 
 export default function Register() {
     const [email, setEmail] = useState('')
-    const [username, setUsername] = useState('')
+    const [username, setName] = useState('')
     const [password, setPassword] = useState('')
     const [showPassword, setShowPassword] = useState(false)
     const [loading, setLoading] = useState(false)

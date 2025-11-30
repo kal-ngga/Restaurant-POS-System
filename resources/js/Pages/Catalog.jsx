@@ -1,125 +1,128 @@
-import { useState } from 'react'
-import CardFood from '@/Components/Card'
+import { useState, useMemo } from 'react'
+import CardFood from '@/Components/CardMakanan'
+import CategoryCard from '@/Components/CategoryCard'
+import Navbar from '@/Components/Navbar'
 
-export default function Catalog() {
-const makananKorea = [
-    {
-        id: 1,
-        image: "https://images.unsplash.com/photo-1604908177522-402fa5c9ecdf?w=400&h=250&fit=crop",
-        category: "Makanan Utama",
-        badge: "New Arrival",
-        title: "Kimchi Jjigae",
-        price: "Rp45.000",
-        unit: "/ mangkuk"
-    },
-    {
-        id: 2,
-        image: "https://images.unsplash.com/photo-1601315379730-94f56b3d2fa5?w=400&h=250&fit=crop",
-        category: "Makanan Utama",
-        badge: "Best Seller",
-        title: "Korean BBQ Beef",
-        price: "Rp85.000",
-        unit: "/ porsi"
-    },
-    {
-        id: 3,
-        image: "https://images.unsplash.com/photo-1588167100290-8cf4e9b6c3c0?w=400&h=250&fit=crop",
-        category: "Minuman",
-        badge: "New Arrival",
-        title: "Banana Milk",
-        price: "Rp18.000",
-        unit: "/ botol"
-    },
-    {
-        id: 4,
-        image: "https://images.unsplash.com/photo-1575932444877-5106f8a12c1c?w=400&h=250&fit=crop",
-        category: "Makanan Utama",
-        badge: "Best Seller",
-        title: "Tteokbokki",
-        price: "Rp30.000",
-        unit: "/ porsi"
-    },
-    {
-        id: 5,
-        image: "https://images.unsplash.com/photo-1525755662778-989d0524087e?w=400&h=250&fit=crop",
-        category: "Makanan Utama",
-        badge: "New Arrival",
-        title: "Korean Fried Chicken",
-        price: "Rp55.000",
-        unit: "/ porsi"
-    },
-    {
-        id: 6,
-        image: "https://images.unsplash.com/photo-1571817017418-7f9b0f4c53d3?w=400&h=250&fit=crop",
-        category: "Makanan Utama",
-        badge: "Best Seller",
-        title: "Bibimbap",
-        price: "Rp50.000",
-        unit: "/ mangkuk"
-    },
-    {
-        id: 7,
-        image: "https://images.unsplash.com/photo-1580654499174-ea47efb93f52?w=400&h=250&fit=crop",
-        category: "Makanan Utama",
-        badge: "New Arrival",
-        title: "Jajangmyeon",
-        price: "Rp40.000",
-        unit: "/ mangkuk"
-    },
-    {
-        id: 8,
-        image: "https://images.unsplash.com/photo-1617189265343-6fc625dbfc68?w=400&h=250&fit=crop",
-        category: "Minuman",
-        badge: "Best Seller",
-        title: "Korean Strawberry Milk",
-        price: "Rp20.000",
-        unit: "/ botol"
-    }
-];
+
+export default function Catalog({ categories = [], menuItems = [] }) {
+    const [searchQuery, setSearchQuery] = useState('');
+    const [activeCategory, setActiveCategory] = useState('all'); // Default ke 'all' untuk menampilkan semua
+
+    // Filter menu items based on search and category
+    const filteredMenuItems = useMemo(() => {
+        let filtered = menuItems;
+
+        // Filter by category (jika bukan 'all')
+        if (activeCategory && activeCategory !== 'all') {
+            filtered = filtered.filter(item => item.category_id === activeCategory);
+        }
+
+        // Filter by search query
+        if (searchQuery) {
+            filtered = filtered.filter(item => 
+                item.title.toLowerCase().includes(searchQuery.toLowerCase())
+            );
+        }
+
+        return filtered;
+    }, [menuItems, activeCategory, searchQuery]);
+
+    // Kategori "Semua Makanan" untuk ditambahkan di awal
+    const allCategory = {
+        id: 'all',
+        name: 'Semua Makanan',
+        icon: '🍽️',
+        menu_items_count: menuItems.length
+    };
+
+    // Format price to Indonesian Rupiah
+    const formatPrice = (price) => {
+        return new Intl.NumberFormat('id-ID', {
+            style: 'currency',
+            currency: 'IDR',
+            minimumFractionDigits: 0,
+        }).format(price);
+    };
 
     return (
-        <div className="w-screen min-h-screen flex flex-col gap-8 items-center bg-amber-100 pb-24">
+        <div className="w-screen min-h-screen flex flex-col items-center bg-stone-100">
             {/* NAVBAR */}
-            <div className="w-screen px-10 py-5 left-0 top-0 absolute bg-white border-b border-gray-100 inline-flex justify-start items-center gap-4">
-                {/* <div data-property-1="favicon" data-property-2="2" className="w-10 h-10 relative overflow-hidden" /> Logo */}
-                {/* Search Bar */}
-                <div className="flex-1 h-16 pl-8 pr-4 py-4 bg-gray-100 rounded-3xl outline outline-1 outline-offset-[-1px] outline-slate-200 flex justify-between items-center hover:outline-slate-500 outline-2 duration-300">
-                    <div className="justify-start text-neutral-500 text-2xl font-normal font-['TT_Commons'] leading-8">Jelajahi makanan disini</div>
-                    {/* Search Icon */}
-                    <div className="p-3 bg-white rounded-2xl flex justify-start items-center gap-2.5">
-                        <div className="w-6 h-6 relative">
-                            <div className="w-5 h-5 left-[2.17px] top-[2.17px] absolute outline outline-2 outline-offset-[-1px] outline-neutral-600" />
-                            <div className="w-0.5 h-0.5 left-[21.67px] top-[21.67px] absolute bg-neutral-600 outline outline-2 outline-offset-[-1px] outline-neutral-600" />
-                            <div className="w-6 h-6 left-0 top-0 absolute opacity-0 bg-neutral-600" />
-                        </div>
+            <Navbar 
+                showSearch={true}
+                searchQuery={searchQuery}
+                onSearchChange={setSearchQuery}
+                searchPlaceholder="Jelajahi makanan disini"
+            />
+            
+            {/* Header Teks*/}
+            <div className="w-full h-auto py-20 mt-[100px] flex flex-col mx-auto items-center justify-center bg-amber-600/25">
+                <div className="flex flex-col items-center justify-center">
+                    <div className="text-center justify-start text-amber-700 text-[48px] font-bold font-['TT_Commons']">
+                        Bingung Mau Makan Apa? Biar Kami Bantu Kamu
+                    </div>
+                    <div className="w-auto max-w-4xl text-center text-amber-800 text-[24px] font-['TT_Commons']">
+                        Sedang ingin yang gurih, manis, atau super pedas? Intip koleksi lengkap hidangan Korea kami di sini.
+                        Apapun mood kamu, kami punya sajian lezat yang siap menemani momen santaimu.
                     </div>
                 </div>
-
-                {/* Foto Profil */}
-                {/* <div className="flex justify-start items-center gap-6">
-                    <div className="w-6 h-6 relative overflow-hidden">
-                        <div className="w-1.5 h-1.5 left-[13.50px] top-[2.50px] absolute bg-red-700 rounded-full" />
-                    </div>
-                    <img className="w-10 h-10 relative rounded-[336px] outline outline-[10px] outline-white" src="https://placehold.co/40x40" />
-                </div> */}
-
-                <a href="/" className="w-auto h-auto px-8 py-4 rounded-3xl text-lg font-medium bg-amber-600 text-amber-100 hover:bg-amber-700 duration-300 font-['TT_Commons']">Logout</a> {/* Logout Link */}
             </div>
 
-            {/* Content dengan Grid Layout */}
-            <div className="mt-32 w-full max-w-7xl px-8 py-6">
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                    {makananKorea.map((item) => (
-                        <CardFood 
-                            key={item.id}
-                            image={item.image}
-                            category={item.category}
-                            badge={item.badge}
-                            title={item.title}
-                            price={item.price}
-                            unit={item.unit}
+            {/* Kontennya */}
+            <div className="w-full max-w-7xl py-8 flex flex-col gap-8">
+                {/* Kategori */}
+                <div className="w-full flex flex-row gap-2 items-center">
+                    <div className="flex gap-5 flex-wrap flex-1">
+                        {/* Kategori "Semua Makanan" */}
+                        <CategoryCard
+                            key={allCategory.id}
+                            icon={allCategory.icon}
+                            title={allCategory.name}
+                            count={allCategory.menu_items_count}
+                            active={activeCategory === 'all'}
+                            onClick={() => setActiveCategory('all')}
                         />
-                    ))}
+                        {/* Kategori lainnya */}
+                        {categories.map((item) => (
+                            <CategoryCard
+                                key={item.id}
+                                icon={item.icon || "🍽️"}
+                                title={item.name}
+                                count={item.menu_items_count || 0}
+                                active={activeCategory === item.id}
+                                onClick={() => setActiveCategory(item.id)}
+                            />
+                        ))}
+                    </div>
+                    {activeCategory && activeCategory !== 'all' && (
+                        <button 
+                            onClick={() => setActiveCategory('all')}
+                            className="w-auto h-auto px-8 py-4 bg-amber-600 rounded-2xl text-neutral-100 font-['TT_Commons'] font-demibold 
+                            hover:bg-amber-500 transition-all duration-300 ml-auto"
+                        >
+                            Hapus Filter
+                        </button>
+                    )}
+                </div>
+
+                {/* Card Makanan */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    {filteredMenuItems.length > 0 ? (
+                        filteredMenuItems.map((item) => (
+                            <CardFood 
+                                key={item.id}
+                                image={item.image}
+                                category={item.category?.name || 'Kategori'}
+                                badge={item.badge}
+                                title={item.title}
+                                price={formatPrice(item.price)}
+                                unit={item.unit}
+                            />
+                        ))
+                    ) : (
+                        <div className="col-span-full text-center py-12 text-gray-500 font-['TT_Commons']">
+                            Tidak ada makanan yang ditemukan
+                        </div>
+                    )}
                 </div>
             </div>
         </div>

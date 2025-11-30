@@ -14,7 +14,7 @@ class AuthController
     // Show login page
     public function showLogin()
     {
-        return Inertia::render('Home');
+        return Inertia::render('Login');
     }
 
     // Handle login POST
@@ -35,11 +35,14 @@ class AuthController
 
         $request->session()->regenerate();
 
+        $user = Auth::user();
+        $redirectTo = $user->role === 'admin' ? '/dashboard' : '/catalog';
+
         if ($request->wantsJson()) {
-            return response()->json(['ok' => true]);
+            return response()->json(['ok' => true, 'redirect' => $redirectTo]);
         }
 
-        return redirect()->intended('/catalog');
+        return redirect()->intended($redirectTo);
     }
 
     // Show register page
@@ -63,15 +66,18 @@ class AuthController
             'name' => $validated['email'],
             'email' => $validated['email'],
             'password' => Hash::make($validated['password']),
+            'role' => 'customer', // Default role untuk user yang register
         ]);
 
         Auth::login($user);
 
+        $redirectTo = $user->role === 'admin' ? '/dashboard' : '/catalog';
+
         if ($request->wantsJson()) {
-            return response()->json(['ok' => true]);
+            return response()->json(['ok' => true, 'redirect' => $redirectTo]);
         }
 
-        return redirect()->intended('/catalog');
+        return redirect()->intended($redirectTo);
     }
 
     // Logout

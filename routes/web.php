@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CatalogController;
 
 // Public routes
 Route::get('/', [AuthController::class, 'showLogin'])->name('login');
@@ -15,11 +16,15 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 // Protected routes
 Route::middleware('auth')->group(function () {
-    Route::get('/dashboard', function () {
-        return Inertia::render('Dashboard');
-    })->name('dashboard');
+    // Admin routes
+    Route::middleware('role:admin')->group(function () {
+        Route::get('/dashboard', function () {
+            return Inertia::render('Dashboard');
+        })->name('dashboard');
+    });
     
-    Route::get('/catalog', function () {
-        return Inertia::render('Catalog');
-    })->name('catalog');
+    // Customer routes
+    Route::middleware('role:customer')->group(function () {
+        Route::get('/catalog', [CatalogController::class, 'index'])->name('catalog');
+    });
 });
