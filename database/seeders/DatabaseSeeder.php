@@ -33,5 +33,10 @@ class DatabaseSeeder extends Seeder
             CategorySeeder::class,
             MenuItemSeeder::class,
         ]);
+        
+        // Seed transactions after menu items are created
+        $this->call([
+            TransactionSeeder::class,
+        ]);
     }
 }

@@ -1,12 +1,19 @@
 import { useState, useMemo } from 'react'
+import axios from 'axios'
 import CardFood from '@/Components/CardMakanan'
 import CategoryCard from '@/Components/CategoryCard'
 import Navbar from '@/Components/Navbar'
-
+import Cart from '@/Components/Cart'
+import { router } from '@inertiajs/react'
 
 export default function Catalog({ categories = [], menuItems = [] }) {
     const [searchQuery, setSearchQuery] = useState('');
-    const [activeCategory, setActiveCategory] = useState('all'); // Default ke 'all' untuk menampilkan semua
+    const [activeCategory, setActiveCategory] = useState('all');
+    const [cartOpen, setCartOpen] = useState(false)
+    const [selectedItem, setSelectedItem] = useState(null)
+    const [showQuantityModal, setShowQuantityModal] = useState(false)
+    const [quantity, setQuantity] = useState(1)
+    const [loading, setLoading] = useState(false)
 
     // Filter menu items based on search and category
     const filteredMenuItems = useMemo(() => {
@@ -44,6 +51,31 @@ export default function Catalog({ categories = [], menuItems = [] }) {
         }).format(price);
     };
 
+    const handleAddToCart = (item) => {
+        setSelectedItem(item)
+        setQuantity(1)
+        setShowQuantityModal(true)
+    }
+
+    const confirmAddToCart = async () => {
+        setLoading(true)
+        try {
+            await axios.post('/cart/add', {
+                menu_item_id: selectedItem.id,
+                quantity: quantity
+            })
+            setShowQuantityModal(false)
+            setSelectedItem(null)
+            setQuantity(1)
+            alert('Berhasil ditambahkan ke keranjang!')
+        } catch (error) {
+            console.error('Error adding to cart:', error)
+            alert('Gagal menambahkan ke keranjang')
+        } finally {
+            setLoading(false)
+        }
+    }
+
     return (
         <div className="w-screen min-h-screen flex flex-col items-center bg-stone-100">
             {/* NAVBAR */}
@@ -52,10 +84,11 @@ export default function Catalog({ categories = [], menuItems = [] }) {
                 searchQuery={searchQuery}
                 onSearchChange={setSearchQuery}
                 searchPlaceholder="Jelajahi makanan disini"
+                onCartClick={() => setCartOpen(true)}
             />
             
             {/* Header Teks*/}
-            <div className="w-full h-auto py-20 mt-[100px] flex flex-col mx-auto items-center justify-center bg-amber-600/25">
+            <div className="w-full h-auto py-20 mt-[100px] flex flex-col mx-auto items-center justify-center bg-red-600/25">
                 <div className="flex flex-col items-center justify-center">
                     <div className="text-center justify-start text-amber-700 text-[48px] font-bold font-['TT_Commons']">
                         Bingung Mau Makan Apa? Biar Kami Bantu Kamu
@@ -116,6 +149,7 @@ export default function Catalog({ categories = [], menuItems = [] }) {
                                 title={item.title}
                                 price={formatPrice(item.price)}
                                 unit={item.unit}
+                                onAddClick={() => handleAddToCart(item)}
                             />
                         ))
                     ) : (
@@ -125,6 +159,65 @@ export default function Catalog({ categories = [], menuItems = [] }) {
                     )}
                 </div>
             </div>
+
+            {/* Cart Slider */}
+            <Cart 
+                isOpen={cartOpen}
+                onClose={() => setCartOpen(false)}
+            />
+
+            {/* Quantity Modal */}
+            {showQuantityModal && selectedItem && (
+                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+                    <div className="bg-white rounded-lg p-6 w-96 shadow-lg">
+                        <h3 className="text-xl font-bold mb-4">{selectedItem.title}</h3>
+                        <p className="text-gray-600 mb-4">
+                            Harga: {formatPrice(selectedItem.price)}
+                        </p>
+
+                        <div className="flex items-center justify-center gap-4 mb-6">
+                            <button
+                                onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                                disabled={loading}
+                                className="w-10 h-10 bg-gray-200 rounded hover:bg-gray-300 disabled:opacity-50"
+                            >
+                                -
+                            </button>
+                            <input
+                                type="number"
+                                value={quantity}
+                                onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
+                                disabled={loading}
+                                className="w-16 text-center border border-gray-300 rounded py-2 disabled:opacity-50"
+                            />
+                            <button
+                                onClick={() => setQuantity(quantity + 1)}
+                                disabled={loading}
+                                className="w-10 h-10 bg-gray-200 rounded hover:bg-gray-300 disabled:opacity-50"
+                            >
+                                +
+                            </button>
+                        </div>
+
+                        <div className="flex gap-3">
+                            <button
+                                onClick={() => setShowQuantityModal(false)}
+                                disabled={loading}
+                                className="flex-1 bg-gray-300 text-gray-800 py-2 rounded hover:bg-gray-400 disabled:opacity-50 font-semibold"
+                            >
+                                Batal
+                            </button>
+                            <button
+                                onClick={confirmAddToCart}
+                                disabled={loading}
+                                className="flex-1 bg-amber-600 text-white py-2 rounded hover:bg-amber-700 disabled:opacity-50 font-semibold"
+                            >
+                                {loading ? 'Menambah...' : 'Tambah ke Keranjang'}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     )
 }

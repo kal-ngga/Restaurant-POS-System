@@ -1,6 +1,5 @@
 import { useState } from 'react'
-import LoginBg from '../assets/Restaurant Images 4K.jpg'
-
+import { router } from '@inertiajs/react'
 
 function PasswordRequirements({ password }) {
     const lengthValid = password.length >= 8
@@ -40,54 +39,36 @@ export default function Register() {
     const [loading, setLoading] = useState(false)
     const passwordValid = password.length >= 8 && /[A-Z]/.test(password) && /[0-9]/.test(password)
 
-    const handleLogin = async (e) => {
+    const handleRegister = (e) => {
         e.preventDefault()
         setLoading(true)
-        console.log('Register submit dengan data:', { email, username, password })
-        
-        try {
-            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content
-            console.log('CSRF Token:', csrfToken)
-            
-            const response = await fetch('/register', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json',
-                    'X-CSRF-TOKEN': csrfToken || ''
-                },
-                credentials: 'same-origin',
-                body: JSON.stringify({ 
-                    email, 
-                    username,
-                    password,
-                    password_confirmation: password 
-                })
-            })
 
-            console.log('Response status:', response.status)
-            
-            if (response.ok) {
-                console.log('Register berhasil!')
-                window.location.href = '/catalog'
-            } else {
-                const error = await response.json()
-                console.log('Response error:', error)
-                alert('Registrasi gagal: ' + (error.message || 'Terjadi kesalahan'))
-            }
-        } catch (err) {
-            console.error('Fetch error:', err)
-            alert('Terjadi kesalahan: ' + err.message)
-        } finally {
-            setLoading(false)
-        }
+        router.post('/register', {
+            name: username,
+            email,
+            password,
+            password_confirmation: password,
+        }, {
+            onSuccess: () => {
+                setLoading(false)
+            },
+            onError: (errors) => {
+                setLoading(false)
+                const message =
+                    errors?.email ||
+                    errors?.password ||
+                    errors?.name ||
+                    'Registrasi gagal, periksa kembali data Anda.'
+                alert(message)
+            },
+        })
     }
 
     return (
         <div className="w-screen h-screen bg-white overflow-hidden flex flex-col lg:flex-row items-center justify-start">
             {/* LEFT IMAGE - Hidden on mobile, visible on lg screens */}
             <img
-                src={LoginBg}
+                src="/Images/bg_register.png"
                 className="
                 hidden lg:block
                 w-1/2 h-full object-cover
@@ -99,7 +80,7 @@ export default function Register() {
             <div className="w-full lg:w-1/2 h-full bg-white flex flex-col items-center justify-center gap-8 px-4 sm:px-8 md:px-12 lg:px-24 py-8 sm:py-12 md:py-16 lg:py-20 overflow-y-auto">
 
                 {/* Logo */}
-                <img src="https://placehold.co/164x77" className="w-32 h-16 md:w-40 md:h-20 lg:w-[164px] lg:h-[77px]" />
+                <img src="/Images/Logo.svg" className="w-32 h-16 md:w-40 md:h-20 lg:w-[164px] lg:h-[77px]" />
 
                 {/* Heading */}
                 <div className="flex flex-col items-center w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg gap-2 text-center">
@@ -129,7 +110,7 @@ export default function Register() {
                     <input 
                         type="text"
                         value={username}
-                        onChange={(e) => setUsername(e.target.value)}
+                        onChange={(e) => setName(e.target.value)}
                         placeholder="masukan Username disini"
                         className="h-12 sm:h-14 md:h-14 lg:h-[52px] px-4 sm:px-6 py-3 sm:py-3 md:py-4 border-2 border-[#EEEEEE] rounded-xl flex items-center text-[#202020] text-base sm:text-lg md:text-lg lg:text-[18px] font-normal focus:outline-none focus:border-[#6A0A0D] focus:ring-2 focus:ring-[#6A0A0D] focus:ring-opacity-20 transition-all"
                     />
@@ -188,9 +169,9 @@ export default function Register() {
 
                 {/* Button Register */}
                 <button 
-                    onClick={handleLogin}
+                    onClick={handleRegister}
                     disabled={loading || !email || !username || !passwordValid}
-                    className="w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg px-4 sm:px-6 py-3 sm:py-3 md:py-4 bg-[#B01116] rounded-xl text-center text-lg sm:text-xl md:text-xl lg:text-[20px] text-[#FFFFFF] font-medium font-tt hover:bg-[#8D0D11] duration-200"
+                    className="w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg px-4 sm:px-6 py-3 sm:py-3 md:py-4 bg-[#B01116] rounded-xl text-center text-lg sm:text-xl md:text-xl lg:text-[20px] text-[#FFFFFF] font-medium font-tt hover:bg-[#8D0D11] duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                     {loading ? 'Memproses...' : 'Register'}
                 </button>

@@ -12,7 +12,8 @@ class CatalogController extends Controller
     public function index(Request $request)
     {
         $categories = Category::withCount('menuItems')->get();
-        $query = MenuItem::with('category');
+        $query = MenuItem::with('category')
+            ->where('status', 'available'); // Only show available menu items
 
         // ini baut filter kategori
         if ($request->has('category_id') && $request->category_id) {
