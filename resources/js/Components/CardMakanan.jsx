@@ -4,7 +4,8 @@ export default function CardFood({
     badge = "New Arrival",
     title = "Nama Produk",
     price = "Rp0",
-    unit = "/ unit"
+    unit = "/ unit",
+    onAddClick = null
   }) {
     return (
       <div className="w-full max-w-sm bg-white rounded-3xl outline outline-1 outline-slate-200 flex flex-col overflow-hidden shadow-sm hover:outline-amber-600 outline-2 duration-300">
@@ -44,7 +45,10 @@ export default function CardFood({
             </div>
 
             {/* Add button */}
-            <button className="p-2 bg-amber-600/10 rounded-full hover:bg-amber-600/20 duration-200 flex">
+            <button 
+              onClick={onAddClick}
+              className="p-2 bg-amber-600/10 rounded-full hover:bg-amber-600/20 duration-200 flex transition-all"
+            >
               <svg 
                 width="16" 
                 height="16" 

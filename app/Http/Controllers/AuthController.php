@@ -36,13 +36,18 @@ class AuthController
         $request->session()->regenerate();
 
         $user = Auth::user();
-        $redirectTo = $user->role === 'admin' ? '/dashboard' : '/catalog';
+        
+        // Check if there's a redirect parameter
+        $redirectTo = $request->input('redirect');
+        if (!$redirectTo) {
+            $redirectTo = $user->role === 'admin' ? '/dashboard' : '/catalog';
+        }
 
         if ($request->wantsJson()) {
             return response()->json(['ok' => true, 'redirect' => $redirectTo]);
         }
 
-        return redirect()->intended($redirectTo);
+        return redirect($redirectTo);
     }
 
     // Show register page
@@ -55,6 +60,7 @@ class AuthController
     public function register(Request $request)
     {
         $validated = $request->validate([
+            'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
             'password' => ['required','string','min:8', 'regex:/[A-Z]/', 'regex:/[0-9]/'],
             'password_confirmation' => 'required|same:password',
@@ -63,7 +69,7 @@ class AuthController
         ]);
 
         $user = User::create([
-            'name' => $validated['email'],
+            'name' => $validated['name'],
             'email' => $validated['email'],
             'password' => Hash::make($validated['password']),
             'role' => 'customer', // Default role untuk user yang register

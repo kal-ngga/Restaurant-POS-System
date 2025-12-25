@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import { router } from '@inertiajs/react'
-import LoginBg from '../assets/Restaurant Images 4K.jpg'
 
 export default function Login() {
     const [email, setEmail] = useState('')
@@ -40,7 +39,7 @@ export default function Login() {
         <div className="w-screen h-screen bg-white overflow-hidden flex flex-col lg:flex-row items-center justify-start">
             {/* LEFT IMAGE - Hidden on mobile, visible on lg screens */}
             <img
-                src={LoginBg}
+                src="/Images/bg_register.png"
                 className="
                 hidden lg:block
                 w-1/2 h-full object-cover
@@ -52,7 +51,7 @@ export default function Login() {
             <div className="w-full lg:w-1/2 h-full bg-white flex flex-col items-center justify-center gap-8 px-4 sm:px-8 md:px-12 lg:px-24 py-8 sm:py-12 md:py-16 lg:py-20 overflow-y-auto">
 
                 {/* Logo */}
-                <img src="https://placehold.co/164x77" className="w-32 h-16 md:w-40 md:h-20 lg:w-[164px] lg:h-[77px]" />
+                <img src="/Images/Logo.svg" className="w-32 h-16 md:w-40 md:h-20 lg:w-[164px] lg:h-[77px]" />
 
                 {/* Heading */}
                 <div className="flex flex-col items-center w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg gap-2 text-center">
@@ -74,7 +73,7 @@ export default function Login() {
                             onChange={(e) => setEmail(e.target.value)}
                             placeholder="masukan E-mail disini"
                             required
-                            className="h-12 sm:h-14 md:h-14 lg:h-[52px] px-4 sm:px-6 py-3 sm:py-3 md:py-4 border-2 border-[#EEEEEE] rounded-xl flex items-center text-[#202020] text-base sm:text-lg md:text-lg lg:text-[18px] font-normal focus:outline-none focus:border-[#6A0A0D] focus:ring-2 focus:ring-[#6A0A0D] focus:ring-opacity-20 transition-all"
+                            className="h-12 sm:h-14 md:h-14 lg:h-[52px] px-4 sm:px-6 py-3 sm:py-3 md:py-4 border-2 border-[#EEEEEE] rounded-xl flex items-center text-[#202020] text-base sm:text-lg md:text-lg lg:text-[18px] font-normal focus:outline-none focus:border-amber-700 focus:ring-2 focus:ring-amber-700 focus:ring-opacity-20 transition-all"
                         />
                     </div>
 
@@ -82,7 +81,7 @@ export default function Login() {
                     <div className="flex flex-col gap-2 font-tt">
                         <label className="text-lg sm:text-xl md:text-xl mx-4 lg:text-[20px] font-medium text-[#202020]">Password</label>
 
-                        <div className="h-12 sm:h-14 md:h-14 lg:h-[52px] px-4 sm:px-6 py-3 sm:py-3 md:py-4 border-2 border-[#EEEEEE] rounded-xl flex items-center justify-between focus-within:border-[#6A0A0D] focus-within:ring-2 focus-within:ring-[#6A0A0D] focus-within:ring-opacity-20 transition-all">
+                        <div className="h-12 sm:h-14 md:h-14 lg:h-[52px] px-4 sm:px-6 py-3 sm:py-3 md:py-4 border-2 border-[#EEEEEE] rounded-xl flex items-center justify-between focus-within:border-amber-700 focus-within:ring-2 focus-within:ring-amber-700 focus-within:ring-opacity-20 transition-all">
                             <input 
                                 type={showPassword ? "text" : "password"}
                                 value={password}
@@ -120,13 +119,12 @@ export default function Login() {
                     <button 
                         type="submit"
                         disabled={loading || !email || !password}
-                        className="w-full px-4 sm:px-6 py-3 sm:py-3 md:py-4 bg-[#B01116] rounded-xl text-center text-lg sm:text-xl md:text-xl lg:text-[20px] text-[#FFFFFF] font-medium font-tt hover:bg-[#8D0D11] duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
+                        className="w-full px-4 sm:px-6 py-3 sm:py-3 md:py-4 bg-amber-500 rounded-xl text-center text-lg sm:text-xl md:text-xl lg:text-[20px] text-[#FFFFFF] font-medium font-tt hover:bg-amber-600 duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
                         {loading ? 'Memproses...' : 'Masuk'}
                     </button>
                 </form>
 
-                {/* Login Akun */}
+                    {/* Login Akun */}
                     <div className="w-full max-w-xs sm:max-w-sm md:max-w-md mx-auto lg:max-w-lg text-center text-base sm:text-lg font-tt text-[#202020]">
                         Belum punya akun?{" "}
                         <a href="/register" className="text-[#6A0A0D] underline hover:opacity-80 font-medium">
